@@ -1,5 +1,5 @@
 """
-YAZIO Calorie Calculator using Harris-Benedict Formula
+YAZIO Calorie Calculator using Mifflin-St Jeor Equation
 Main module containing the Flask application
 """
 from flask import Flask, request, jsonify
@@ -23,8 +23,8 @@ def home():
             '/activity-factors': 'GET - Get activity factor values',
             '/health': 'GET - API health check'
         },
-        'method': 'Harris-Benedict Formula',
-        'note': 'Updated to use official YAZIO calculation method'
+        'method': 'Mifflin-St Jeor Equation',
+        'note': 'Uses the same formula as YAZIO official calculator'
     })
 
 @app.route('/health', methods=['GET'])
@@ -42,17 +42,17 @@ def get_activity_factors():
         'activity_factors': CalorieCalculator.ACTIVITY_FACTORS,
         'aliases': CalorieCalculator.ACTIVITY_ALIASES,
         'description': {
-            'sedentary': 'Mostly sitting during the day (office work) - 1.2',
-            'lightly_active': 'Mostly standing during the day (teacher, cashier) - 1.375',
-            'moderately_active': 'Mostly walking during the day (sales rep, server) - 1.55',
-            'active': 'Physically active day (builder, construction) - 1.725',
-            'very_active': 'Very intense physical activity daily - 1.9'
+            'sedentary': 'Lightly active - Mostly sitting during the day (office work) - 1.2',
+            'lightly_active': 'Moderately active - Mostly standing during the day (teacher, cashier) - 1.375',
+            'moderately_active': 'Active - Mostly walking during the day (sales rep, server) - 1.55',
+            'active': 'Very Active - Physically demanding job (builder, construction) - 1.725',
+            'very_active': 'Extremely active - Very intense physical activity daily - 1.9'
         }
     })
 
 @app.route('/calculate-bmr', methods=['POST'])
 def calculate_bmr_only():
-    """Calculate BMR only using Harris-Benedict Formula"""
+    """Calculate BMR only using Mifflin-St Jeor Equation"""
     try:
         data = request.get_json()
         required = ['weight_kg', 'height_cm', 'age', 'gender']
@@ -73,7 +73,7 @@ def calculate_bmr_only():
         return jsonify({
             'bmr': bmr,
             'unit': 'calories/day',
-            'method': 'Harris-Benedict Formula'
+            'method': 'Mifflin-St Jeor Equation'
         })
         
     except ValueError as e:
@@ -83,7 +83,7 @@ def calculate_bmr_only():
 
 @app.route('/calculate', methods=['POST'])
 def calculate_calorie_goal():
-    """Calculate complete calorie goal using Harris-Benedict Formula"""
+    """Calculate complete calorie goal using Mifflin-St Jeor Equation"""
     try:
         data = request.get_json()
         required = ['weight_kg', 'height_cm', 'age', 'gender', 'activity_level',
@@ -153,7 +153,7 @@ def calculate_calorie_goal():
                 )
             },
             'warnings': warnings if warnings else None,
-            'method': 'Harris-Benedict Formula',
+            'method': 'Mifflin-St Jeor Equation',
             'timestamp': datetime.now().isoformat()
         }
         
@@ -181,14 +181,14 @@ def calculate_time_to_goal(weight_difference, weekly_goal):
 
 if __name__ == '__main__':
     print("🚀 Starting YAZIO Calorie Calculator API...")
-    print("📊 Using Harris-Benedict Formula (Official YAZIO Method)")
+    print("📊 Using Mifflin-St Jeor Equation (Official YAZIO Method)")
     print("🌐 API running on http://localhost:5000")
     print("\nActivity Levels:")
-    print("  - sedentary/low: 1.2 (mostly sitting)")
-    print("  - lightly_active: 1.375 (mostly standing)")
-    print("  - moderately_active/moderate: 1.55 (mostly walking)")
-    print("  - active/high: 1.725 (physical work)")
-    print("  - very_active/very_high: 1.9 (intense activity)")
+    print("  - sedentary/low: 1.2 (lightly active - mostly sitting)")
+    print("  - lightly_active: 1.375 (moderately active - mostly standing)")
+    print("  - moderately_active/moderate: 1.55 (active - mostly walking)")
+    print("  - active/high: 1.725 (very active - physical work)")
+    print("  - very_active/very_high: 1.9 (extremely active - intense activity)")
     print("\nAvailable endpoints:")
     print("  GET  / - API information")
     print("  GET  /health - Health check")

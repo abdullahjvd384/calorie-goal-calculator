@@ -5,17 +5,19 @@ Contains the CalorieCalculator class with all calculation methods
 
 class CalorieCalculator:
     """
-    YAZIO Calorie Calculator using Harris-Benedict Formula
+    YAZIO Calorie Calculator using Mifflin-St Jeor Equation
     Formula: Calorie Goal = (BMR × Activity Factor) + Energy Difference
+    
+    YAZIO uses the Mifflin-St Jeor equation, which is more accurate than Harris-Benedict
     """
     
-    # Activity level factors (Harris-Benedict)
+    # Activity level factors (matching YAZIO exactly)
     ACTIVITY_FACTORS = {
-        'sedentary': 1.2,        # Mostly sitting (office work)
-        'lightly_active': 1.375, # Mostly standing (teacher, cashier)
-        'moderately_active': 1.55, # Mostly walking (sales, server)
-        'active': 1.725,         # Physical work (builder)
-        'very_active': 1.9       # Very intense physical activity
+        'sedentary': 1.2,        # Lightly active - Mostly sitting (office work)
+        'lightly_active': 1.375, # Moderately active - Mostly standing (teacher, cashier)
+        'moderately_active': 1.55, # Active - Mostly walking (sales, server)
+        'active': 1.725,         # Very Active - Physical work (builder)
+        'very_active': 1.9       # Extremely active - Very intense physical activity
     }
     
     # Aliases for common terms
@@ -28,11 +30,17 @@ class CalorieCalculator:
     
     @staticmethod
     def calculate_bmr(weight_kg, height_cm, age, gender):
-        """Calculate Basal Metabolic Rate using Harris-Benedict Formula"""
+        """
+        Calculate Basal Metabolic Rate using Mifflin-St Jeor Equation
+        This is the formula YAZIO uses for more accurate results
+        
+        Men: (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) + 5
+        Women: (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) - 161
+        """
         if gender.lower() == 'male':
-            bmr = 66.47 + (13.75 * weight_kg) + (5.003 * height_cm) - (6.755 * age)
+            bmr = (10 * weight_kg) + (6.25 * height_cm) - (5 * age) + 5
         else:  # female
-            bmr = 655.1 + (9.563 * weight_kg) + (1.850 * height_cm) - (4.676 * age)
+            bmr = (10 * weight_kg) + (6.25 * height_cm) - (5 * age) - 161
             
         return round(bmr, 2)
     
