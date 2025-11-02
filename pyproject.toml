@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "calorie_calculator"
+version = "0.1.0"
+description = "A calorie goal calculator application"
+authors = [
+    {name = "Your Name"}
+]
+readme = "README.md"
+requires-python = ">=3.8"
