@@ -24,7 +24,7 @@ def home():
             '/health': 'GET - API health check'
         },
         'method': 'Mifflin-St Jeor Equation',
-        'note': 'Uses the same formula as YAZIO official calculator'
+        'note': 'Official YAZIO calculation method'
     })
 
 @app.route('/health', methods=['GET'])
@@ -40,13 +40,14 @@ def get_activity_factors():
     """Get available activity factors"""
     return jsonify({
         'activity_factors': CalorieCalculator.ACTIVITY_FACTORS,
-        'aliases': CalorieCalculator.ACTIVITY_ALIASES,
+        'default_factors': CalorieCalculator.DEFAULT_ACTIVITY_FACTORS,
         'description': {
-            'sedentary': 'Lightly active - Mostly sitting during the day (office work) - 1.2',
-            'lightly_active': 'Moderately active - Mostly standing during the day (teacher, cashier) - 1.375',
-            'moderately_active': 'Active - Mostly walking during the day (sales rep, server) - 1.55',
-            'active': 'Very Active - Physically demanding job (builder, construction) - 1.725',
-            'very_active': 'Extremely active - Very intense physical activity daily - 1.9'
+            'low': 'Low activity - 1.25',
+            'moderate': 'Moderate activity - 1.38',
+            'high': 'High activity - 1.52',
+            'very_high': 'Very high activity - 1.65',
+            'default_male': 'Default for new male users (low to moderate) - 1.36',
+            'default_female': 'Default for new female users (low to moderate) - 1.33'
         }
     })
 
@@ -99,10 +100,10 @@ def calculate_calorie_goal():
             return jsonify({'error': 'Gender must be "male" or "female"'}), 400
         
         activity = data['activity_level'].lower()
-        valid_activities = list(CalorieCalculator.ACTIVITY_FACTORS.keys()) + list(CalorieCalculator.ACTIVITY_ALIASES.keys())
-        if activity not in valid_activities:
+        valid_activities = list(CalorieCalculator.ACTIVITY_FACTORS.keys())
+        if activity not in valid_activities and activity != 'default':
             return jsonify({
-                'error': f'Activity level must be one of: {", ".join(valid_activities)}'
+                'error': f'Activity level must be one of: {", ".join(valid_activities)} or "default"'
             }), 400
         
         result = CalorieCalculator.calculate_calorie_goal(
@@ -184,11 +185,11 @@ if __name__ == '__main__':
     print("📊 Using Mifflin-St Jeor Equation (Official YAZIO Method)")
     print("🌐 API running on http://localhost:5000")
     print("\nActivity Levels:")
-    print("  - sedentary/low: 1.2 (lightly active - mostly sitting)")
-    print("  - lightly_active: 1.375 (moderately active - mostly standing)")
-    print("  - moderately_active/moderate: 1.55 (active - mostly walking)")
-    print("  - active/high: 1.725 (very active - physical work)")
-    print("  - very_active/very_high: 1.9 (extremely active - intense activity)")
+    print("  - low: 1.25")
+    print("  - moderate: 1.38")
+    print("  - high: 1.52")
+    print("  - very_high: 1.65")
+    print("  - default: 1.36 (male) / 1.33 (female)")
     print("\nAvailable endpoints:")
     print("  GET  / - API information")
     print("  GET  /health - Health check")

@@ -7,36 +7,25 @@ class CalorieCalculator:
     """
     YAZIO Calorie Calculator using Mifflin-St Jeor Equation
     Formula: Calorie Goal = (BMR × Activity Factor) + Energy Difference
-    
-    YAZIO uses the Mifflin-St Jeor equation, which is more accurate than Harris-Benedict
     """
     
-    # Activity level factors (matching YAZIO exactly)
+    # Activity level factors (YAZIO Official)
     ACTIVITY_FACTORS = {
-        'sedentary': 1.2,        # Lightly active - Mostly sitting (office work)
-        'lightly_active': 1.375, # Moderately active - Mostly standing (teacher, cashier)
-        'moderately_active': 1.55, # Active - Mostly walking (sales, server)
-        'active': 1.725,         # Very Active - Physical work (builder)
-        'very_active': 1.9       # Extremely active - Very intense physical activity
+        'low': 1.25,           # Low activity
+        'moderate': 1.38,      # Moderate activity
+        'high': 1.52,          # High activity
+        'very_high': 1.65      # Very high activity
     }
     
-    # Aliases for common terms
-    ACTIVITY_ALIASES = {
-        'low': 'sedentary',
-        'moderate': 'moderately_active',
-        'high': 'active',
-        'very_high': 'very_active'
+    # Default activity factors for new users (low to moderate)
+    DEFAULT_ACTIVITY_FACTORS = {
+        'male': 1.36,
+        'female': 1.33
     }
     
     @staticmethod
     def calculate_bmr(weight_kg, height_cm, age, gender):
-        """
-        Calculate Basal Metabolic Rate using Mifflin-St Jeor Equation
-        This is the formula YAZIO uses for more accurate results
-        
-        Men: (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) + 5
-        Women: (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) - 161
-        """
+        """Calculate Basal Metabolic Rate using Mifflin-St Jeor Equation"""
         if gender.lower() == 'male':
             bmr = (10 * weight_kg) + (6.25 * height_cm) - (5 * age) + 5
         else:  # female
@@ -65,16 +54,17 @@ class CalorieCalculator:
     def calculate_calorie_goal(weight_kg, height_cm, age, gender, 
                               activity_level, starting_weight, goal_weight, 
                               weekly_goal):
-        """Complete calorie goal calculation using Harris-Benedict Formula"""
+        """Complete calorie goal calculation using Mifflin-St Jeor Equation"""
         # Step 1: Calculate BMR
         bmr = CalorieCalculator.calculate_bmr(weight_kg, height_cm, age, gender)
         
         # Step 2: Get activity factor
-        activity_key = CalorieCalculator.ACTIVITY_ALIASES.get(
-            activity_level.lower(), 
-            activity_level.lower()
-        )
-        activity_factor = CalorieCalculator.ACTIVITY_FACTORS.get(activity_key, 1.2)
+        activity_key = activity_level.lower()
+        activity_factor = CalorieCalculator.ACTIVITY_FACTORS.get(activity_key)
+        
+        # If no activity level specified, use default for new users
+        if activity_factor is None:
+            activity_factor = CalorieCalculator.DEFAULT_ACTIVITY_FACTORS.get(gender.lower(), 1.36)
         
         # Step 3: Calculate TDEE (maintenance calories)
         tdee = bmr * activity_factor

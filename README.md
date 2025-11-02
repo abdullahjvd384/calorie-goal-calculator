@@ -1,16 +1,16 @@
 # 🍏 Calorie Goal Calculator API
 
-A professional Flask-based API for calculating daily calorie goals using the Mifflin-St Jeor Equation. This calculator provides the same results as the official YAZIO calculator and helps determine optimal daily calorie intake based on various factors including BMR (Basal Metabolic Rate), activity level, and weight goals.
+A professional Flask-based API for calculating daily calorie goals using the **Mifflin-St Jeor Equation** - the official YAZIO calculation method. This calculator helps determine optimal daily calorie intake based on various factors including BMR (Basal Metabolic Rate), activity level, and weight goals.
 
 ## ✨ Features
 
-- Calculate BMR using Mifflin-St Jeor Equation (same as YAZIO)
+- Calculate BMR using Mifflin-St Jeor Equation (most accurate formula)
 - Determine daily calorie needs based on activity level
 - Calculate calorie goals for weight loss/gain
 - Provide macronutrient distribution
 - BMI calculation and health warnings
 - RESTful API with detailed documentation
-- Matches YAZIO official calculator results exactly
+- 5% more accurate than Harris-Benedict Formula
 
 ## 🛠️ Technology Stack
 
@@ -76,13 +76,13 @@ Calculate BMR only
 Calculate complete calorie goal
 ```json
 {
-    "weight_kg": 70,
-    "height_cm": 175,
-    "age": 25,
+    "weight_kg": 80,
+    "height_cm": 180,
+    "age": 29,
     "gender": "male",
     "activity_level": "moderate",
-    "starting_weight": 70,
-    "goal_weight": 65,
+    "starting_weight": 80,
+    "goal_weight": 85,
     "weekly_goal": 0.5,
     "carb_percent": 50,
     "protein_percent": 30,
@@ -98,7 +98,7 @@ pytest tests/
 
 ## 📚 Documentation
 
-The API uses the Mifflin-St Jeor Equation for BMR calculation, which is the same formula used by YAZIO:
+The API uses the **Mifflin-St Jeor Equation** for BMR calculation, which is the most current and accurate formula (5% more accurate than Harris-Benedict):
 
 ### For Men:
 BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) + 5
@@ -106,18 +106,36 @@ BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) + 5
 ### For Women:
 BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) - 161
 
-### Activity Factors (matching YAZIO):
-- Lightly Active (sedentary): 1.2 - Mostly sitting (e.g., office worker)
-- Moderately Active (lightly_active): 1.375 - Mostly standing (e.g., teacher, cashier)
-- Active (moderately_active): 1.55 - Mostly walking (e.g., sales, server)
-- Very Active (active): 1.725 - Physically demanding job (e.g., builder)
-- Extremely Active (very_active): 1.9 - Very intense physical activity
+### Activity Factors:
+- **Low**: 1.25
+- **Moderate**: 1.38
+- **High**: 1.52
+- **Very High**: 1.65
+- **Default (new users)**: 1.36 (male) / 1.33 (female)
 
-### Calorie Goal Calculation:
-Daily Calorie Goal = (BMR × Activity Factor) ± Calorie Adjustment
+### Energy Difference Formula:
+Energy difference = (Weight difference × 750) ÷ (Weight difference ÷ Weekly goal)
 
-For weight loss: Subtract 375 kcal per 0.5 kg/week goal
-For weight gain: Add 375 kcal per 0.5 kg/week goal
+- For weight loss of 0.5 kg/week: 375 calories deficit
+- For weight loss of 1 kg/week: 750 calories deficit
+
+### Complete Formula:
+**Calorie Goal = (BMR × Activity Factor) + Energy Difference**
+
+## 📖 Example Calculation
+
+**John Smith:**
+- Weight: 80 kg
+- Height: 180 cm
+- Age: 29
+- Activity Level: Moderate (1.38)
+- Goal Weight: 85 kg
+
+**Calculation:**
+1. BMR = (10 × 80) + (6.25 × 180) - (5 × 29) + 5 = **1,785 Cal**
+2. Maintain weight = 1,785 × 1.38 = **2,463.3 Cal**
+3. Energy difference = (-5 × 750) ÷ (-5 ÷ 0.5) = **375 Cal**
+4. **Final Calorie Goal = 1,785 × 1.38 + 375 = 2,838.3 Cal**
 
 ## 📄 License
 
